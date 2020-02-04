@@ -57,4 +57,11 @@ function run (tests) {
 }
 
 const files = process.argv.slice(2).filter(v => !v.startsWith('-'));
-run(loadTests(files));
+if (files.length === 0) {
+    console.log(`
+usage: laura ...files
+    `.trim())
+    process.exit(1);
+} else {
+    run(loadTests(files));
+}
