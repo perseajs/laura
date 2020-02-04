@@ -6,24 +6,15 @@ const path    = require('path');
 
 const NUM_WORKERS = process.env.NUM_WORKERS || require('os').cpus().length;
 
-function readDir (dir) {
-    const entities = fs.readdirSync(dir, { withFileTypes: true });
-    const childPaths = entities.map(entity => {
-        const childPath = path.resolve(dir, entity.name);
-        return entity.isDirectory() ? readDir(childPath) : childPath;
-    })
-    return Array.prototype.concat(...childPaths);
-}
-
-function discoverTests (regex) {
+function loadTests (files) {
     const registeredTests = [];
-    for (const filename of readDir(process.cwd())) {
-        if (!regex.test(filename)) { continue; }
+    for (const filename of files) {
+        const fullFilename = path.resolve(process.cwd(), filename)
 
         global.test = function test(testName, fn) {
-            registeredTests.push(filename + ' :: ' + testName);
+            registeredTests.push(fullFilename + ' :: ' + testName);
         }
-        require(path.resolve(process.cwd(), filename));
+        require(fullFilename);
     }
 
     delete global.test;
@@ -65,4 +56,5 @@ function run (tests) {
     });
 }
 
-run(discoverTests(new RegExp(process.argv[2])));
+const files = process.argv.slice(2).filter(v => !v.startsWith('-'));
+run(loadTests(files));

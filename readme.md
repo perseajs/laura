@@ -20,7 +20,7 @@ test('thing() returns "foo"', () => {
 To run tests:
 
 ```bash
-$ yarn laura "\.test\.js$"
+$ yarn laura **.test.js
 Passed examples/bar.test.js :: one in 0ms
 Passed examples/bar.test.js :: two in 0ms
 Passed examples/bar.test.js :: three in 0ms
