@@ -2,5 +2,6 @@
   "name": "laura",
   "version": "1.0.0",
   "bin": "index.js",
+  "types": "index.d.ts",
   "license": "MIT"
 }
