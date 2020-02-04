@@ -1,0 +1,6 @@
+{
+  "name": "laura",
+  "version": "1.0.0",
+  "bin": "index.js",
+  "license": "MIT"
+}
