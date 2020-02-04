@@ -35,7 +35,7 @@ function run (tests) {
     const report = { startTime: Date.now(), pass: 0, fail: 0 };
     const toRun = Array.from(tests)
 
-    cluster.setupMaster({ exec: 'worker.js', });
+    cluster.setupMaster({ exec: path.resolve(__dirname, 'worker.js'), });
     const workers = [];
     for (let i = 0; i < NUM_WORKERS && toRun.length > 0; i++) {
         workers.push(
