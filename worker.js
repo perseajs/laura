@@ -1,21 +1,48 @@
 const path = require('path');
 
-global.test = async function test(testName, fn) {
-    if (testName === targetTestName) {
-        const shortenedTestName = process.env.TEST_NAME.replace(process.cwd() + '/', '');
-        const startTime = Date.now();
-        try {
-            await fn();
-            console.log('Passed %s in %dms', shortenedTestName, Date.now() - startTime);
-            process.exit(0);
-        } catch (e) {
-            console.log('Failed %s in %dms', shortenedTestName, Date.now() - startTime);
-            console.error(e);
-            process.exit(1);
+function loadTest (testName) {
+    const [filename, targetTestName] = testName.split(' :: ');
+
+    let beforeFn = () => {};
+    global.before = async function before (fn) {
+        beforeFn = fn;
+    };
+
+    let afterFn = () => {};
+    global.after = async function after (fn) {
+        afterFn = fn;
+    };
+
+    let targetTest = null;
+    global.test = async function test(testName, fn) {
+        if (testName === targetTestName) {
+            targetTest = fn;
         }
     }
+
+    require(path.resolve(process.cwd(), filename));
+
+    return { targetTest, beforeFn, afterFn };
 }
 
-const [filename, targetTestName] = process.env.TEST_NAME.split(' :: ');
+async function main () {
+    const { targetTest, beforeFn, afterFn } = loadTest(process.env.TEST_NAME);
 
-require(path.resolve(process.cwd(), filename));
+    const startTime = Date.now();
+    let status = 'Pending';
+    await beforeFn();
+    try {
+        await targetTest();
+        status = 'Passed';
+    } catch (e) {
+        status = 'Failed';
+        console.error(e);
+    }
+    await afterFn();
+
+    const shortenedTestName = process.env.TEST_NAME.replace(process.cwd() + '/', '');
+    console.log('%s %s in %dms', status, shortenedTestName, Date.now() - startTime);
+    process.exit(status === 'Passed' ? 0 : 1);
+}
+
+main();

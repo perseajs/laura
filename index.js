@@ -7,6 +7,9 @@ const path    = require('path');
 const NUM_WORKERS = process.env.NUM_WORKERS || require('os').cpus().length;
 
 function loadTests (files) {
+    global.before = () => {};
+    global.after = () => {};
+
     const registeredTests = [];
     for (const filename of files) {
         const fullFilename = path.resolve(process.cwd(), filename)
@@ -18,6 +21,8 @@ function loadTests (files) {
     }
 
     delete global.test;
+    delete global.before;
+    delete global.after;
 
     return registeredTests;
 }
