@@ -49,7 +49,9 @@ function run (tests) {
         workers.splice(workers.indexOf(worker), 1);
 
         if (toRun.length > 0) {
-            cluster.fork({ TEST_NAME: toRun.shift() })
+            workers.push(
+                cluster.fork({ TEST_NAME: toRun.shift() })
+            );
         }
 
         if (workers.length === 0) {
