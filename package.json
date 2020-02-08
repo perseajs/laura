@@ -1,5 +1,5 @@
 {
-  "name": "laura",
+  "name": "@persea/laura",
   "version": "0.1.0",
   "bin": "index.js",
   "types": "index.d.ts",
